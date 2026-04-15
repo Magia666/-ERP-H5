@@ -1075,7 +1075,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('home');
 
   return (
-    <div className="flex flex-col h-screen bg-[#f5f5f5] font-sans max-w-md mx-auto relative overflow-hidden">
+    <div className="flex flex-col h-[100dvh] bg-[#f5f5f5] font-sans max-w-md mx-auto relative overflow-hidden">
       {currentView === 'home' && <HomeView onNavigate={setCurrentView} />}
       {currentView === 'items' && <ItemsView />}
       {currentView === 'stats' && <StatsView />}
