@@ -1,19 +1,25 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, FileEdit, ClipboardList, ArrowLeftRight, LayoutGrid, Home, ShoppingBag, PieChart, User, Search, Filter, Plus, Eye, Edit, FileText, Image as ImageIcon, Scan, Trash2, Minus, BarChart3, TrendingUp, TrendingDown, Package, Calendar, ChevronDown, Camera, Mic, LogOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileEdit, ClipboardList, ArrowLeftRight, LayoutGrid, Home, ShoppingBag, PieChart, User, Search, Filter, Plus, Eye, Edit, FileText, Image as ImageIcon, Scan, Trash2, Minus, BarChart3, TrendingUp, TrendingDown, Package, Calendar, ChevronDown, Camera, Mic, LogOut, AlertCircle, RefreshCw } from 'lucide-react';
 
-const MenuIcon = ({ color, text, icon: Icon, label, onClick }: { color: string, text?: string, icon?: React.ElementType, label: string, onClick?: () => void }) => (
-  <div onClick={onClick} className="flex flex-col items-center justify-start w-1/4 mt-3 mb-2 cursor-pointer active:opacity-70">
-    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-[18px] font-medium ${color}`}>
-      {text ? text : (Icon && <Icon size={22} strokeWidth={2} />)}
+const ActionCard = ({ color, icon: Icon, label, desc, onClick }: { color: string, icon: React.ElementType, label: string, desc?: string, onClick?: () => void }) => (
+  <div onClick={onClick} className="flex items-center gap-2.5 p-3 rounded-xl bg-[#f8f9fc] active:bg-gray-100 transition-colors border border-gray-100/50">
+    <div className={`w-9 h-9 rounded-full flex items-center justify-center text-white ${color} shadow-sm shrink-0`}>
+      <Icon size={18} strokeWidth={2} />
     </div>
-    <span className="text-[11px] text-[#333333] mt-2 text-center leading-tight">{label}</span>
+    <div className="flex flex-col">
+      <span className="text-[13px] font-medium text-gray-800">{label}</span>
+      <span className="text-[10px] text-gray-400 mt-0.5">{desc}</span>
+    </div>
   </div>
 );
 
 const Section = ({ title, children }: { title: string, children: React.ReactNode }) => (
-  <div className="bg-white rounded-xl mx-3 mt-3 px-1 py-2 shadow-sm">
-    <div className="text-[11px] text-[#999999] mb-1 ml-2">{title}</div>
-    <div className="flex flex-wrap">
+  <div className="bg-white rounded-2xl mx-3 mt-3 p-3 shadow-sm border border-gray-100/50">
+    <div className="text-[14px] font-semibold text-gray-800 mb-2.5 flex items-center gap-1.5">
+      <div className="w-1 h-3.5 bg-[#009bf5] rounded-full"></div>
+      {title}
+    </div>
+    <div className="grid grid-cols-2 gap-2.5">
       {children}
     </div>
   </div>
@@ -64,7 +70,7 @@ const ItemCard = ({ id, name, category, creator, date }: any) => (
   </div>
 );
 
-const ItemsView = () => (
+const ItemsView = ({ onNavigate }: { onNavigate?: (view: string) => void }) => (
   <div className="flex flex-col h-full w-full">
     {/* Header */}
     <div className="bg-[#009bf5] text-white flex items-center justify-between px-3 py-3 shrink-0">
@@ -83,7 +89,7 @@ const ItemsView = () => (
         <Search size={16} className="text-gray-400" />
         <input type="text" placeholder="搜索物品名称/序号/条码" className="bg-transparent border-none outline-none ml-2 text-sm w-full" />
       </div>
-      <button className="bg-[#2b85e4] text-white px-3 py-1.5 rounded-full text-sm flex items-center gap-1 shrink-0 active:bg-[#2374c7]">
+      <button onClick={() => onNavigate && onNavigate('add-item')} className="bg-[#2b85e4] text-white px-3 py-1.5 rounded-full text-sm flex items-center gap-1 shrink-0 active:bg-[#2374c7]">
         <Plus size={16} /> 添加
       </button>
     </div>
@@ -891,30 +897,30 @@ const HomeView = ({ onNavigate }: { onNavigate: (view: string) => void }) => (
 
     {/* Content */}
     <div className="flex-1 overflow-y-auto pb-32 pt-2">
-      <Section title="出库">
-        <MenuIcon color="bg-[#2b85e4]" text="出" label="新增出库" onClick={() => onNavigate('add-outbound')} />
-        <MenuIcon color="bg-[#2b85e4]" icon={ClipboardList} label="出库单管理" onClick={() => onNavigate('outbound-list')} />
+      <Section title="出库管理">
+        <ActionCard color="bg-[#2b85e4]" icon={Minus} label="新增出库" desc="扫码或手动" onClick={() => onNavigate('add-outbound')} />
+        <ActionCard color="bg-[#2b85e4]" icon={ClipboardList} label="出库单管理" desc="查询与跟踪" onClick={() => onNavigate('outbound-list')} />
       </Section>
 
-      <Section title="入库">
-        <MenuIcon color="bg-[#19be6b]" text="入" label="新增入库" onClick={() => onNavigate('add-inbound')} />
-        <MenuIcon color="bg-[#19be6b]" icon={ClipboardList} label="入库单管理" onClick={() => onNavigate('inbound-list')} />
+      <Section title="入库管理">
+        <ActionCard color="bg-[#19be6b]" icon={Plus} label="新增入库" desc="快速添加库存" onClick={() => onNavigate('add-inbound')} />
+        <ActionCard color="bg-[#19be6b]" icon={ClipboardList} label="入库单管理" desc="入库明细记录" onClick={() => onNavigate('inbound-list')} />
       </Section>
 
-      <Section title="采购">
-        <MenuIcon color="bg-[#ff9900]" text="采" label="我的采购" onClick={() => onNavigate('purchase-list')} />
-        <MenuIcon color="bg-[#19be6b]" text="供" label="供应商管理" />
+      <Section title="采购管理">
+        <ActionCard color="bg-[#ff9900]" icon={ShoppingBag} label="我的采购" desc="申请与审核" onClick={() => onNavigate('purchase-list')} />
+        <ActionCard color="bg-[#8b5cf6]" icon={User} label="供应商管理" desc="名录与联系人" />
       </Section>
     </div>
 
     {/* Floating AI Actions */}
     <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[85%] bg-gray-900/95 backdrop-blur-md rounded-full p-1.5 flex items-center shadow-2xl shadow-indigo-500/20 z-20 border border-gray-700/50">
-      <button className="flex-1 flex items-center justify-center gap-2 text-white py-2.5 rounded-full active:bg-white/10 transition-colors">
+      <button onClick={() => onNavigate('photo-recognition')} className="flex-1 flex items-center justify-center gap-2 text-white py-2.5 rounded-full active:bg-white/10 transition-colors">
         <Camera size={18} className="text-[#a78bfa]" />
         <span className="text-[14px] font-medium">拍照识别</span>
       </button>
       <div className="w-[1px] h-5 bg-gray-700 mx-1"></div>
-      <button className="flex-1 flex items-center justify-center gap-2 text-white py-2.5 rounded-full active:bg-white/10 transition-colors">
+      <button onClick={() => onNavigate('voice-input')} className="flex-1 flex items-center justify-center gap-2 text-white py-2.5 rounded-full active:bg-white/10 transition-colors">
         <Mic size={18} className="text-[#f472b6]" />
         <span className="text-[14px] font-medium">语音录入</span>
       </button>
@@ -1071,13 +1077,443 @@ const ProfileView = () => {
   );
 };
 
+const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate: (view: string) => void }) => {
+  const [scanning, setScanning] = useState(false);
+  const [hasPhoto, setHasPhoto] = useState(false);
+  const [results, setResults] = useState<{name: string, quantity: number}[]>([]);
+
+  const handleTakePhoto = () => {
+    setHasPhoto(true);
+    setScanning(true);
+    // Simulate AI scanning delay
+    setTimeout(() => {
+      setScanning(false);
+      setResults([
+        { name: '一次性杯', quantity: 50 }, // matches mockItems
+        { name: '番茄', quantity: 15 },    // matches mockItems
+        { name: '洁柔抽纸', quantity: 2 }    // DOES NOT match mockItems
+      ]);
+    }, 2000);
+  };
+
+  return (
+    <div className="flex flex-col h-full w-full bg-[#f8f9fc]">
+      {/* Header */}
+      <div className="bg-[#009bf5] text-white flex items-center px-3 py-3 shrink-0">
+        <button onClick={onBack} className="p-1 -ml-1 active:opacity-70">
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-[17px] font-medium flex-1 pr-6 text-center">拍照识别</h1>
+      </div>
+
+      <div className="flex-1 overflow-y-auto flex flex-col">
+        {!hasPhoto ? (
+          // Camera Placeholder
+          <div className="flex-1 flex flex-col items-center justify-center p-6 pb-20">
+            <div className="w-full aspect-[3/4] bg-gray-900 rounded-3xl relative overflow-hidden flex flex-col items-center justify-center shadow-lg border border-gray-800">
+               <Camera size={48} className="text-gray-500 mb-4" />
+               <p className="text-gray-400 text-[13px]">将物品或单据放入框内</p>
+               <div className="absolute inset-x-8 inset-y-16 border-2 border-white/20 rounded-xl">
+                 {/* Corner markers */}
+                 <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-white"></div>
+                 <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-white"></div>
+                 <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-white"></div>
+                 <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-white"></div>
+               </div>
+            </div>
+            <button
+              onClick={handleTakePhoto}
+              className="mt-10 w-20 h-20 bg-[#e0e0e0] rounded-full flex items-center justify-center border-[6px] border-white shadow-xl active:scale-95 transition-transform"
+            >
+              <div className="w-14 h-14 bg-white rounded-full"></div>
+            </button>
+          </div>
+        ) : scanning ? (
+          // Scanning State
+          <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white">
+            <div className="relative w-48 h-48 mb-8">
+               <div className="absolute inset-0 border-4 border-indigo-50 rounded-2xl"></div>
+               <div className="absolute inset-x-0 h-1 bg-indigo-500 shadow-[0_4px_15px_rgba(99,102,241,0.5)] animate-scan"></div>
+               <ImageIcon size={64} className="absolute inset-0 m-auto text-indigo-200" />
+            </div>
+            <h2 className="text-[18px] font-medium text-gray-800 mb-2">AI 正在疯狂识别中...</h2>
+            <p className="text-[13px] text-gray-400">正在分析物品特征与数量</p>
+          </div>
+        ) : (
+          // Results State
+          <div className="flex-1 flex flex-col p-4">
+            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                <Scan size={24} className="text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-green-800 text-[16px]">识别成功</h3>
+                <p className="text-[13px] text-green-600 mt-0.5">共识别出 {results.length} 种物品</p>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto mb-4">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h4 className="text-[14px] font-medium text-gray-800">识别清单</h4>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                {results.map((item, idx) => {
+                  const matchedItem = mockItems.find(mi => mi.name === item.name);
+                  const isMatched = !!matchedItem;
+                  return (
+                    <div key={idx} className={`p-4 flex flex-col gap-3 ${!isMatched ? 'bg-orange-50/50' : ''}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isMatched ? 'bg-indigo-50 text-indigo-500' : 'bg-orange-100 text-orange-500'}`}>
+                            {isMatched ? <Package size={22} /> : <AlertCircle size={22} />}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-800 text-[15px] flex items-center gap-1.5">
+                              {item.name}
+                              {!isMatched && <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 text-[10px] rounded border border-orange-200">未入库</span>}
+                            </div>
+                            <div className="text-[12px] mt-1 text-gray-400">
+                              {isMatched ? `编号: #${matchedItem.id} | ${matchedItem.category}` : '未在物品库中找到该物品'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="font-semibold text-gray-800 text-[16px]">x{item.quantity}</div>
+                        </div>
+                      </div>
+                      {!isMatched && (
+                        <div className="flex justify-start pl-[56px] pt-1 mt-1">
+                           <button onClick={() => onNavigate('add-item')} className="text-[13px] text-[#2b85e4] flex items-center gap-1 active:opacity-70 bg-blue-50 px-3 py-1.5 rounded-lg font-medium border border-blue-100">
+                             <Plus size={14} /> 需要创建此物品吗？
+                           </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="flex gap-3 pb-safe pt-2">
+              <button
+                onClick={() => onNavigate('add-inbound')}
+                className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#19be6b] to-[#15a35c] text-white font-medium shadow-md shadow-green-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
+              >
+                <Plus size={18} /> 去入库
+              </button>
+              <button
+                onClick={() => onNavigate('add-outbound')}
+                className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#2b85e4] to-[#2573c7] text-white font-medium shadow-md shadow-blue-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
+              >
+                <Minus size={18} /> 去出库
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const AddItemView = ({ onBack }: { onBack: () => void }) => {
+  return (
+    <div className="flex flex-col h-full w-full bg-[#f5f5f5]">
+      {/* Header */}
+      <div className="bg-[#009bf5] text-white flex items-center px-3 py-3 shrink-0">
+        <button onClick={onBack} className="p-1 -ml-1 active:opacity-70">
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-[17px] font-medium flex-1 pr-6 text-center">新增物品</h1>
+      </div>
+
+      <div className="flex-1 overflow-y-auto pb-24">
+        {/* 基本信息 */}
+        <div className="bg-white px-4 py-1 mt-2">
+          <div className="flex items-center justify-between py-3 border-b border-gray-100">
+            <div className="text-[14px] text-gray-700 w-20"><span className="text-red-500 mr-1">*</span>物品名称</div>
+            <input type="text" placeholder="请输入名称" className="flex-1 text-right text-[14px] outline-none text-gray-800" />
+          </div>
+          <div className="flex items-center justify-between py-3 border-b border-gray-100 active:bg-gray-50">
+            <div className="text-[14px] text-gray-700 w-20"><span className="text-red-500 mr-1">*</span>分类</div>
+            <div className="flex-1 flex items-center justify-end text-gray-400">
+              <span className="text-[14px]">请选择</span>
+              <ChevronRight size={16} className="ml-1" />
+            </div>
+          </div>
+          <div className="flex items-center justify-between py-3 border-b border-gray-100 active:bg-gray-50">
+             <div className="text-[14px] text-gray-700 w-20"><span className="text-red-500 mr-1">*</span>系列</div>
+            <div className="flex-1 flex items-center justify-end text-gray-400">
+              <span className="text-[14px]">请选择</span>
+              <ChevronRight size={16} className="ml-1" />
+            </div>
+          </div>
+          <div className="flex flex-col py-3 border-b border-gray-100">
+             <div className="text-[14px] text-gray-700 mb-3">图片</div>
+             <div className="flex gap-3">
+               <div className="w-20 h-20 border border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 bg-gray-50 active:bg-gray-100">
+                 <Plus size={24} />
+               </div>
+             </div>
+             <div className="text-[12px] text-[#2b85e4] mt-2 active:opacity-70 flex inline-flex w-max">手动输入图片地址</div>
+          </div>
+          <div className="flex flex-col py-3 border-b border-gray-100">
+             <div className="text-[14px] text-gray-700 mb-2">包装清单</div>
+             <textarea className="w-full bg-gray-50/50 border border-gray-100 rounded-lg p-2.5 text-[14px] outline-none resize-none h-16 text-gray-800" placeholder="暂无"></textarea>
+          </div>
+          <div className="flex flex-col py-3">
+             <div className="text-[14px] text-gray-700 mb-2">备注</div>
+             <textarea className="w-full bg-gray-50/50 border border-gray-100 rounded-lg p-2.5 text-[14px] outline-none resize-none h-16 text-gray-800" placeholder="暂无"></textarea>
+          </div>
+        </div>
+
+        {/* SKU 信息 */}
+        <div className="mt-3">
+          <div className="px-4 py-2 flex items-center justify-between">
+            <span className="text-[13px] text-gray-500 font-medium">SKU 信息</span>
+            <span className="text-[12px] text-[#2b85e4] active:opacity-70">货品编码规则</span>
+          </div>
+          
+          <div className="bg-white mx-3 rounded-xl p-3 border border-gray-100 shadow-sm relative overflow-hidden mb-4">
+            <div className="absolute top-0 left-0 w-1 h-full bg-[#19be6b]"></div>
+            <div className="pl-2">
+              <div className="flex gap-3 mb-4">
+                <div className="w-[60px] h-[60px] bg-gray-50 border border-gray-100 rounded-lg flex flex-col items-center justify-center shrink-0 text-gray-300">
+                  <ImageIcon size={20} />
+                  <span className="text-[8px] mt-1 scale-90">暂无图片</span>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-2">
+                     <span className="text-[13px] text-gray-600"><span className="text-red-500 mr-0.5">*</span>规格名称</span>
+                     <input type="text" placeholder="请输入规格" className="w-24 text-right text-[13px] outline-none text-gray-800" />
+                  </div>
+                  <div className="flex items-center justify-between pt-2">
+                     <span className="text-[13px] text-gray-600">状态</span>
+                     <div className="flex items-center gap-1 text-[13px] text-gray-800 border border-gray-200 px-2.5 py-1 rounded-md active:bg-gray-50">
+                       上架 <ChevronDown size={14} className="text-gray-400"/>
+                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-2 space-y-2 mb-3">
+                <div className="flex items-center justify-between bg-white px-2 py-2 rounded-md border border-gray-100 shadow-sm">
+                  <span className="text-[12px] text-gray-500 w-[64px] shrink-0"><span className="text-red-500 mr-0.5">*</span>物品货号</span>
+                  <input type="text" placeholder="点击生成或输入" className="flex-1 text-[13px] mx-2 outline-none text-gray-800" />
+                  <RefreshCw size={14} className="text-gray-400 active:text-[#2b85e4] active:rotate-180 transition-all" />
+                </div>
+                <div className="flex items-center justify-between bg-white px-2 py-2 rounded-md border border-gray-100 shadow-sm">
+                  <span className="text-[12px] text-gray-500 w-[64px] shrink-0"><span className="text-red-500 mr-0.5">*</span>SKU编码</span>
+                  <input type="text" placeholder="点击生成或输入" className="flex-1 text-[13px] mx-2 outline-none text-gray-800" />
+                  <RefreshCw size={14} className="text-gray-400 active:text-[#2b85e4] active:rotate-180 transition-all" />
+                </div>
+                <div className="flex items-center justify-between bg-white px-2 py-2 rounded-md border border-gray-100 shadow-sm">
+                  <span className="text-[12px] text-gray-500 w-[64px] shrink-0">&nbsp;&nbsp;物品条码</span>
+                  <input type="text" placeholder="输入或扫码" className="flex-1 text-[13px] mx-2 outline-none text-gray-800" />
+                  <Scan size={14} className="text-[#2b85e4] active:opacity-70" />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="flex flex-col border-b border-gray-100 pb-2">
+                   <span className="text-[12px] text-gray-500 mb-1">销售单价(¥) <Edit size={10} className="inline ml-1 text-blue-400"/></span>
+                   <input type="number" placeholder="0.00" className="text-[14px] outline-none text-gray-800" />
+                 </div>
+                 <div className="flex flex-col border-b border-gray-100 pb-2">
+                   <span className="text-[12px] text-gray-500 mb-1"><span className="text-red-500 mr-0.5">*</span>库存单位</span>
+                   <div className="flex items-center justify-between text-[14px] text-gray-400 active:bg-gray-50">
+                     请选择单位 <ChevronDown size={14}/>
+                   </div>
+                 </div>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-dashed border-gray-200">
+                <button className="w-full py-2 bg-blue-50/50 flex items-center justify-center gap-1.5 text-[13px] text-[#2b85e4] rounded-lg border border-blue-100/50 active:bg-blue-50">
+                  <Plus size={14} /> 添加副单位
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Actions */}
+      <div className="bg-white px-4 py-2.5 flex gap-3 border-t border-gray-200 absolute bottom-0 w-full max-w-md pb-safe">
+        <button onClick={onBack} className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-medium active:bg-gray-200 text-[15px]">取消</button>
+        <button className="flex-[2] py-3 rounded-xl bg-[#2b85e4] text-white font-medium active:bg-[#2374c7] shadow-md shadow-blue-500/20 text-[15px]">保存物品</button>
+      </div>
+    </div>
+  );
+};
+
+const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate: (view: string) => void }) => {
+  const [status, setStatus] = useState<'idle' | 'recording' | 'processing' | 'results'>('idle');
+  const [results, setResults] = useState<{name: string, quantity: number}[]>([]);
+  const [transcript, setTranscript] = useState("");
+
+  const handleStartRecording = () => {
+    setStatus('recording');
+    // Simulate recording time
+    setTimeout(() => {
+      setStatus('processing');
+      setTranscript("帮我出库15个番茄，50个一次性杯，还有2包不存在的纸巾。");
+      // Simulate AI processing delay
+      setTimeout(() => {
+        setStatus('results');
+        setResults([
+          { name: '一次性杯', quantity: 50 }, // matches mockItems
+          { name: '番茄', quantity: 15 },    // matches mockItems
+          { name: '不存在的纸巾', quantity: 2 }    // DOES NOT match mockItems
+        ]);
+      }, 1500);
+    }, 3000);
+  };
+
+  return (
+    <div className="flex flex-col h-full w-full bg-[#f8f9fc]">
+      {/* Header */}
+      <div className="bg-[#009bf5] text-white flex items-center px-3 py-3 shrink-0">
+        <button onClick={onBack} className="p-1 -ml-1 active:opacity-70">
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className="text-[17px] font-medium flex-1 pr-6 text-center">语音录入</h1>
+      </div>
+
+      <div className="flex-1 overflow-y-auto flex flex-col">
+        {status === 'idle' || status === 'recording' || status === 'processing' ? (
+          <div className="flex-1 flex flex-col items-center justify-between p-6 pb-20 mt-10">
+            <div className="flex flex-col items-center min-h-[120px]">
+              {status === 'idle' && (
+                <div className="text-center">
+                  <h2 className="text-[20px] font-medium text-gray-800 mb-2">我是您的AI仓储助手</h2>
+                  <p className="text-[14px] text-gray-400">您可以这样对我说："入库10箱苹果和5个西瓜"</p>
+                </div>
+              )}
+              {status === 'recording' && (
+                <div className="text-center animate-pulse">
+                  <h2 className="text-[20px] font-medium text-pink-500 mb-2">正在倾听中...</h2>
+                  <p className="text-[14px] text-gray-400">请说出想要操作的物品名和数量</p>
+                </div>
+              )}
+              {status === 'processing' && (
+                <div className="text-center">
+                  <div className="flex items-end justify-center h-8 gap-1 mb-4">
+                    <div className="w-1.5 bg-pink-400 rounded-full animate-wave-1"></div>
+                    <div className="w-1.5 bg-pink-400 rounded-full animate-wave-2"></div>
+                    <div className="w-1.5 bg-pink-400 rounded-full animate-wave-3"></div>
+                    <div className="w-1.5 bg-pink-400 rounded-full animate-wave-4"></div>
+                    <div className="w-1.5 bg-pink-400 rounded-full animate-wave-5"></div>
+                  </div>
+                  <h2 className="text-[18px] font-medium text-gray-800 mb-2">AI 正在解析语义...</h2>
+                  <p className="text-[14px] text-pink-500 font-medium px-6">"{transcript}"</p>
+                </div>
+              )}
+            </div>
+
+            <div className="relative flex items-center justify-center w-32 h-32 mb-10">
+               {status === 'recording' && (
+                 <div className="absolute inset-0 bg-pink-100 rounded-full animate-pulse-ring"></div>
+               )}
+               <button
+                 onClick={status === 'idle' ? handleStartRecording : undefined}
+                 className={`relative z-10 w-20 h-20 rounded-full flex items-center justify-center shadow-xl active:scale-95 transition-all duration-300
+                    ${status === 'idle' ? 'bg-gradient-to-br from-pink-400 to-pink-500 text-white' : 
+                      status === 'recording' ? 'bg-pink-500 text-white scale-110 shadow-pink-500/40' : 
+                      'bg-gray-200 text-gray-400'}`}
+               >
+                 <Mic size={32} />
+               </button>
+            </div>
+          </div>
+        ) : (
+          // Results State
+          <div className="flex-1 flex flex-col p-4">
+            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mb-5">
+              <h3 className="font-semibold text-indigo-800 text-[14px] mb-1">您刚才说：</h3>
+              <p className="text-[14px] text-indigo-600 leading-relaxed font-medium">"{transcript}"</p>
+            </div>
+            
+            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                <Scan size={24} className="text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-green-800 text-[16px]">识别成功</h3>
+                <p className="text-[13px] text-green-600 mt-0.5">共识别出 {results.length} 种物品</p>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto mb-4">
+              <div className="flex items-center justify-between mb-3 px-1">
+                <h4 className="text-[14px] font-medium text-gray-800">识别清单</h4>
+              </div>
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                {results.map((item, idx) => {
+                  const matchedItem = mockItems.find(mi => mi.name === item.name);
+                  const isMatched = !!matchedItem;
+                  return (
+                    <div key={idx} className={`p-4 flex flex-col gap-3 ${!isMatched ? 'bg-orange-50/50' : ''}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isMatched ? 'bg-indigo-50 text-indigo-500' : 'bg-orange-100 text-orange-500'}`}>
+                            {isMatched ? <Package size={22} /> : <AlertCircle size={22} />}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-800 text-[15px] flex items-center gap-1.5">
+                              {item.name}
+                              {!isMatched && <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 text-[10px] rounded border border-orange-200">未入库</span>}
+                            </div>
+                            <div className="text-[12px] mt-1 text-gray-400">
+                              {isMatched ? `编号: #${matchedItem.id} | ${matchedItem.category}` : '未在物品库中找到该物品'}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="font-semibold text-gray-800 text-[16px]">x{item.quantity}</div>
+                        </div>
+                      </div>
+                      {!isMatched && (
+                        <div className="flex justify-start pl-[56px] pt-1 mt-1">
+                           <button onClick={() => onNavigate('add-item')} className="text-[13px] text-[#2b85e4] flex items-center gap-1 active:opacity-70 bg-blue-50 px-3 py-1.5 rounded-lg font-medium border border-blue-100">
+                             <Plus size={14} /> 需要创建此物品吗？
+                           </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="flex gap-3 pb-safe pt-2">
+              <button
+                onClick={() => onNavigate('add-inbound')}
+                className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#19be6b] to-[#15a35c] text-white font-medium shadow-md shadow-green-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
+              >
+                <Plus size={18} /> 去入库
+              </button>
+              <button
+                onClick={() => onNavigate('add-outbound')}
+                className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#2b85e4] to-[#2573c7] text-white font-medium shadow-md shadow-blue-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
+              >
+                <Minus size={18} /> 去出库
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default function App() {
   const [currentView, setCurrentView] = useState('home');
 
   return (
     <div className="flex flex-col h-[100dvh] bg-[#f5f5f5] font-sans max-w-md mx-auto relative overflow-hidden">
       {currentView === 'home' && <HomeView onNavigate={setCurrentView} />}
-      {currentView === 'items' && <ItemsView />}
+      {currentView === 'items' && <ItemsView onNavigate={setCurrentView} />}
       {currentView === 'stats' && <StatsView />}
       {currentView === 'profile' && <ProfileView />}
       {currentView === 'add-outbound' && <AddOutboundView onBack={() => setCurrentView('home')} />}
@@ -1085,6 +1521,9 @@ export default function App() {
       {currentView === 'add-inbound' && <AddInboundView onBack={() => setCurrentView('home')} />}
       {currentView === 'inbound-list' && <InboundListView onBack={() => setCurrentView('home')} />}
       {currentView === 'purchase-list' && <PurchaseListView onBack={() => setCurrentView('home')} />}
+      {currentView === 'photo-recognition' && <PhotoRecognitionView onBack={() => setCurrentView('home')} onNavigate={setCurrentView} />}
+      {currentView === 'voice-input' && <VoiceInputView onBack={() => setCurrentView('home')} onNavigate={setCurrentView} />}
+      {currentView === 'add-item' && <AddItemView onBack={() => setCurrentView('items')} />}
 
       {/* Bottom Navigation (Only show on main tabs) */}
       {(currentView === 'home' || currentView === 'items' || currentView === 'stats' || currentView === 'profile') && (
