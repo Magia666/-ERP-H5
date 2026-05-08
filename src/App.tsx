@@ -1240,7 +1240,7 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
           </div>
         ) : (
           // Results State
-          <div className="flex-1 flex flex-col p-4 min-h-0">
+          <div className="flex-1 overflow-y-auto p-4">
             <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center gap-3 mb-5 shrink-0">
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                 <Scan size={24} className="text-green-600" />
@@ -1251,7 +1251,7 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto mb-4">
+            <div className="mb-4">
               <div className="flex items-center justify-between mb-3 px-1">
                 <h4 className="text-[14px] font-medium text-gray-800">识别清单</h4>
               </div>
@@ -1294,8 +1294,30 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
                             </div>
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          <div className="font-semibold text-gray-800 text-[16px]">x{item.quantity}</div>
+                        <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 rounded-lg p-1 border border-gray-100" onClick={(e) => e.stopPropagation()}>
+                          <button 
+                            className="w-7 h-7 flex items-center justify-center bg-white rounded shadow-sm text-gray-500 active:bg-gray-100"
+                            onClick={() => {
+                               const newResults = [...results];
+                               if(newResults[idx].quantity > 1) {
+                                 newResults[idx].quantity--;
+                                 setResults(newResults);
+                               }
+                            }}
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="w-8 text-center font-semibold text-gray-800 text-[15px]">{item.quantity}</span>
+                          <button 
+                            className="w-7 h-7 flex items-center justify-center bg-white rounded shadow-sm text-gray-500 active:bg-gray-100"
+                            onClick={() => {
+                               const newResults = [...results];
+                               newResults[idx].quantity++;
+                               setResults(newResults);
+                            }}
+                          >
+                            <Plus size={14} />
+                          </button>
                         </div>
                       </div>
                       {!isMatched ? (
@@ -1609,7 +1631,7 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
           </div>
         ) : (
           // Results State
-          <div className="flex-1 flex flex-col p-4 min-h-0">
+          <div className="flex-1 overflow-y-auto p-4">
             <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mb-5 shrink-0">
               <h3 className="font-semibold text-indigo-800 text-[14px] mb-1">您刚才说：</h3>
               <p className="text-[14px] text-indigo-600 leading-relaxed font-medium">"{transcript}"</p>
@@ -1668,8 +1690,30 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
                             </div>
                           </div>
                         </div>
-                        <div className="text-right shrink-0">
-                          <div className="font-semibold text-gray-800 text-[16px]">x{item.quantity}</div>
+                        <div className="flex items-center gap-1.5 shrink-0 bg-gray-50 rounded-lg p-1 border border-gray-100" onClick={(e) => e.stopPropagation()}>
+                          <button 
+                            className="w-7 h-7 flex items-center justify-center bg-white rounded shadow-sm text-gray-500 active:bg-gray-100"
+                            onClick={() => {
+                               const newResults = [...results];
+                               if(newResults[idx].quantity > 1) {
+                                 newResults[idx].quantity--;
+                                 setResults(newResults);
+                               }
+                            }}
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="w-8 text-center font-semibold text-gray-800 text-[15px]">{item.quantity}</span>
+                          <button 
+                            className="w-7 h-7 flex items-center justify-center bg-white rounded shadow-sm text-gray-500 active:bg-gray-100"
+                            onClick={() => {
+                               const newResults = [...results];
+                               newResults[idx].quantity++;
+                               setResults(newResults);
+                            }}
+                          >
+                            <Plus size={14} />
+                          </button>
                         </div>
                       </div>
                       {!isMatched ? (
