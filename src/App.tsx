@@ -26,11 +26,26 @@ const Section = ({ title, children }: { title: string, children: React.ReactNode
 );
 
 const mockItems = [
-  { id: '20433', name: '锅铲', category: '耗材/厨具/--', creator: 'lsg2', date: '2026-03-19 16:33:28' },
-  { id: '20432', name: '鸡蛋', category: '荤菜/食材/--', creator: 'lsg2', date: '2026-01-22 13:18:27' },
-  { id: '20431', name: '番茄', category: '素菜/蔬菜/--', creator: 'lsg2', date: '2026-01-22 13:17:15' },
-  { id: '20430', name: '一次性杯', category: '耗材/餐具/--', creator: 'lsg2', date: '2026-01-21 16:54:43' },
-  { id: '20429', name: '大虾', category: '荤菜/食材/--', creator: 'lsg2', date: '2026-01-21 10:47:36' },
+  { id: '20448', name: '大米', aliases: ['东北大米', '五常大米', '白米'], category: '主食/粮油/--', creator: 'lsg2', date: '2026-04-10 09:12:00' },
+  { id: '20447', name: '食用油', aliases: ['大豆油', '菜籽油', '色拉油'], category: '调料/粮油/--', creator: 'lsg2', date: '2026-04-10 09:15:30' },
+  { id: '20446', name: '食用盐', aliases: ['盐', '海盐', '井盐'], category: '调料/配料/--', creator: 'lsg2', date: '2026-04-09 14:20:11' },
+  { id: '20445', name: '酱油', aliases: ['生抽', '老抽', '味极鲜'], category: '调料/配料/--', creator: 'lsg2', date: '2026-04-09 14:22:45' },
+  { id: '20444', name: '陈醋', aliases: ['醋', '香醋', '米醋'], category: '调料/配料/--', creator: 'lsg2', date: '2026-04-09 14:25:20' },
+  { id: '20443', name: '面条', aliases: ['挂面', '手工面', '拉面'], category: '主食/干货/--', creator: 'lsg2', date: '2026-04-08 11:30:00' },
+  { id: '20442', name: '洗洁精', aliases: ['餐具洗洁精', '洗碗精'], category: '耗材/清洁/--', creator: 'lsg2', date: '2026-04-05 16:45:12' },
+  { id: '20441', name: '百洁布', aliases: ['洗碗布', '海绵擦', '抹布'], category: '耗材/清洁/--', creator: 'lsg2', date: '2026-04-05 16:48:33' },
+  { id: '20440', name: '垃圾袋', aliases: ['黑色垃圾袋', '手提垃圾袋'], category: '耗材/日用/--', creator: 'lsg2', date: '2026-04-05 16:55:01' },
+  { id: '20439', name: '扫把', aliases: ['扫帚', '扫地把'], category: '耗材/清洁/--', creator: 'lsg2', date: '2026-04-02 10:11:22' },
+  { id: '20438', name: '拖把', aliases: ['海绵拖把', '平板拖把'], category: '耗材/清洁/--', creator: 'lsg2', date: '2026-04-02 10:15:44' },
+  { id: '20437', name: '卷纸', aliases: ['卫生纸', '厕纸'], category: '耗材/日用/--', creator: 'lsg2', date: '2026-04-01 09:05:10' },
+  { id: '20436', name: '抽纸', aliases: ['纸巾', '面巾纸', '洁柔抽纸'], category: '耗材/日用/--', creator: 'lsg2', date: '2026-04-01 09:10:25' },
+  { id: '20435', name: '猪肉', aliases: ['五花肉', '瘦肉', '后腿肉'], category: '荤菜/食材/--', creator: 'lsg2', date: '2026-03-25 08:30:00' },
+  { id: '20434', name: '牛肉', aliases: ['牛腩', '肥牛', '牛里脊'], category: '荤菜/食材/--', creator: 'lsg2', date: '2026-03-25 08:35:15' },
+  { id: '20433', name: '锅铲', aliases: ['炒菜铲', '铁铲'], category: '耗材/厨具/--', creator: 'lsg2', date: '2026-03-19 16:33:28' },
+  { id: '20432', name: '鸡蛋', aliases: ['土鸡蛋', '白皮蛋'], category: '荤菜/食材/--', creator: 'lsg2', date: '2026-01-22 13:18:27' },
+  { id: '20431', name: '番茄', aliases: ['西红柿', '圣女果'], category: '素菜/蔬菜/--', creator: 'lsg2', date: '2026-01-22 13:17:15' },
+  { id: '20430', name: '一次性杯', aliases: ['纸杯', '水杯', '一次性水杯', '一次性纸杯'], category: '耗材/餐具/--', creator: 'lsg2', date: '2026-01-21 16:54:43' },
+  { id: '20429', name: '大虾', aliases: ['明虾', '基围虾', '虾'], category: '荤菜/食材/--', creator: 'lsg2', date: '2026-01-21 10:47:36' },
 ];
 
 const ItemCard = ({ id, name, category, creator, date }: any) => (
@@ -187,8 +202,24 @@ const ItemSelectorModal = ({ onClose, onConfirm }: { onClose: () => void, onConf
   );
 };
 
-const AddOutboundView = ({ onBack }: { onBack: () => void }) => {
+const AddOutboundView = ({ onBack, initialItems = [] }: { onBack: () => void, initialItems?: any[] }) => {
   const [showItemSelector, setShowItemSelector] = useState(false);
+  const [items, setItems] = useState<any[]>(initialItems);
+
+  const totalQuantity = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
+
+  const handleUpdateQuantity = (idx: number, delta: number) => {
+    const newItems = [...items];
+    const newQty = Math.max(0, (newItems[idx].quantity || 0) + delta);
+    newItems[idx].quantity = newQty;
+    setItems(newItems);
+  };
+
+  const handleRemove = (idx: number) => {
+    const newItems = [...items];
+    newItems.splice(idx, 1);
+    setItems(newItems);
+  };
 
   return (
     <div className="flex flex-col h-full w-full bg-[#f5f5f5] relative">
@@ -231,67 +262,74 @@ const AddOutboundView = ({ onBack }: { onBack: () => void }) => {
 
         {/* Added Items List */}
         <div className="px-3 py-2 text-[12px] text-gray-500 flex justify-between mt-1">
-          <span>已添加物品</span>
-          <span>共 1 种</span>
+          <span>已添加出库物品</span>
+          <span>共 {items.length} 种</span>
         </div>
 
         <div className="px-2">
-          <div className="bg-white p-3 rounded-lg shadow-sm mb-2">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-2 mb-2">
-              <div className="font-medium text-[15px] text-gray-800">
-                番茄 <span className="text-[11px] text-gray-400 ml-1 font-normal">#25238</span>
-              </div>
-              <button className="p-1 active:opacity-50">
-                <Trash2 size={16} className="text-red-500" />
-              </button>
-            </div>
-            
-            <div className="flex gap-3">
-              <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded flex flex-col items-center justify-center shrink-0 text-gray-300">
-                <ImageIcon size={20} />
-                <span className="text-[8px] mt-1 scale-90">暂无图片</span>
-              </div>
-              <div className="flex-1 text-[11px] text-gray-500 space-y-1">
-                <div className="flex justify-between">
-                  <span>规格: 番茄</span>
-                  <span>货号: fq01</span>
+          {items.map((item, idx) => (
+            <div key={idx} className="bg-white p-3 rounded-lg shadow-sm mb-2">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-2 mb-2">
+                <div className="font-medium text-[15px] text-gray-800">
+                  {item.name} 
+                  {item.id ? (
+                    <span className="text-[11px] text-gray-400 ml-1 font-normal">#{item.id}</span>
+                  ) : (
+                    <span className="text-[11px] text-orange-500 ml-1 font-medium bg-orange-50 px-1 py-0.5 rounded">未建档物品</span>
+                  )}
                 </div>
-                <div className="flex justify-between">
-                  <span>类目: 素菜</span>
-                  <span>SKU: SC0203</span>
+                <button onClick={() => handleRemove(idx)} className="p-1 active:opacity-50">
+                  <Trash2 size={16} className="text-red-500" />
+                </button>
+              </div>
+              
+              <div className="flex gap-3">
+                <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded flex flex-col items-center justify-center shrink-0 text-gray-300">
+                  <ImageIcon size={20} />
+                  <span className="text-[8px] mt-1 scale-90">暂无图片</span>
                 </div>
-                <div className="text-gray-400 mt-1">
-                  可用库存: <span className="text-gray-800 font-medium">0</span> &nbsp;|&nbsp; 冻结: 0
+                <div className="flex-1 text-[11px] text-gray-500 space-y-1">
+                  <div className="flex justify-between">
+                    <span>规格: {item.spec || '无'}</span>
+                    <span>货号: {item.itemNo || '无'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>类目: {item.category?.split('/')[0] || '默认'}</span>
+                    <span>SKU: {item.sku || '无'}</span>
+                  </div>
+                  <div className="text-gray-400 mt-1">
+                    可用库存: <span className="text-gray-800 font-medium">{item.stock || 0}</span> &nbsp;|&nbsp; 冻结: 0
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-3 flex items-center justify-between pt-2 border-t border-gray-50">
-              <input 
-                type="text" 
-                placeholder="物品备注..." 
-                className="bg-gray-50 text-[12px] px-2 py-1.5 rounded w-[45%] outline-none border border-gray-100" 
-              />
-              <div className="flex items-center border border-gray-200 rounded h-7">
-                <button className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
-                  <Minus size={14} />
-                </button>
-                <div className="w-10 h-full flex items-center justify-center border-l border-r border-gray-200 text-[13px] font-medium">
-                  0
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-gray-50">
+                <input 
+                  type="text" 
+                  placeholder="物品备注..." 
+                  className="bg-gray-50 text-[12px] px-2 py-1.5 rounded w-[45%] outline-none border border-gray-100" 
+                />
+                <div className="flex items-center border border-gray-200 rounded h-7">
+                  <button onClick={() => handleUpdateQuantity(idx, -1)} className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
+                    <Minus size={14} />
+                  </button>
+                  <div className="w-10 h-full flex items-center justify-center border-l border-r border-gray-200 text-[13px] font-medium">
+                    {item.quantity || 0}
+                  </div>
+                  <button onClick={() => handleUpdateQuantity(idx, 1)} className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
+                    <Plus size={14} />
+                  </button>
                 </div>
-                <button className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
-                  <Plus size={14} />
-                </button>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Bottom Action Bar */}
       <div className="bg-white border-t border-gray-200 flex justify-between items-center px-4 py-2 shrink-0 absolute bottom-0 w-full max-w-md pb-safe z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
         <div className="text-[12px] text-gray-600">
-          合计数量: <span className="text-[#ff9900] text-[18px] font-medium ml-1">0</span>
+          合计数量: <span className="text-[#ff9900] text-[18px] font-medium ml-1">{totalQuantity}</span>
         </div>
         <button className="bg-[#009bf5] text-white px-6 py-2 rounded-full text-[14px] font-medium active:bg-[#0085d4]">
           确认出库
@@ -462,8 +500,24 @@ const OutboundListView = ({ onBack, onNavigate }: { onBack: () => void, onNaviga
   );
 };
 
-const AddInboundView = ({ onBack }: { onBack: () => void }) => {
+const AddInboundView = ({ onBack, initialItems = [] }: { onBack: () => void, initialItems?: any[] }) => {
   const [showItemSelector, setShowItemSelector] = useState(false);
+  const [items, setItems] = useState<any[]>(initialItems);
+
+  const totalQuantity = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
+
+  const handleUpdateQuantity = (idx: number, delta: number) => {
+    const newItems = [...items];
+    const newQty = Math.max(0, (newItems[idx].quantity || 0) + delta);
+    newItems[idx].quantity = newQty;
+    setItems(newItems);
+  };
+
+  const handleRemove = (idx: number) => {
+    const newItems = [...items];
+    newItems.splice(idx, 1);
+    setItems(newItems);
+  };
 
   return (
     <div className="flex flex-col h-full w-full bg-[#f5f5f5] relative">
@@ -506,68 +560,75 @@ const AddInboundView = ({ onBack }: { onBack: () => void }) => {
 
         {/* Added Items List */}
         <div className="px-3 py-2 text-[12px] text-gray-500 flex justify-between mt-1">
-          <span>已添加物品</span>
-          <span>共 1 种</span>
+          <span>已入库物品清单</span>
+          <span>共 {items.length} 种</span>
         </div>
 
         <div className="px-2">
-          <div className="bg-white p-3 rounded-lg shadow-sm mb-2">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-2 mb-2">
-              <div className="font-medium text-[15px] text-gray-800">
-                锅铲 <span className="text-[11px] text-gray-400 ml-1 font-normal">#25240</span>
-              </div>
-              <button className="p-1 active:opacity-50">
-                <Trash2 size={16} className="text-red-500" />
-              </button>
-            </div>
-            
-            <div className="flex gap-3">
-              <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded flex flex-col items-center justify-center shrink-0 text-gray-300">
-                <ImageIcon size={20} />
-                <span className="text-[8px] mt-1 scale-90">暂无图片</span>
-              </div>
-              <div className="flex-1 text-[11px] text-gray-500 space-y-1">
-                <div className="flex justify-between">
-                  <span>规格: 大锅铲</span>
-                  <span>货号: HC030000003</span>
+          {items.map((item, idx) => (
+            <div key={idx} className="bg-white p-3 rounded-lg shadow-sm mb-2">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-2 mb-2">
+                <div className="font-medium text-[15px] text-gray-800">
+                  {item.name} 
+                  {item.id ? (
+                    <span className="text-[11px] text-gray-400 ml-1 font-normal">#{item.id}</span>
+                  ) : (
+                    <span className="text-[11px] text-orange-500 ml-1 font-medium bg-orange-50 px-1 py-0.5 rounded">未建档物品(按新物品新建)</span>
+                  )}
                 </div>
-                <div className="flex justify-between">
-                  <span>类目: 耗材</span>
-                  <span>SKU: HC030000004</span>
-                </div>
+                <button onClick={() => handleRemove(idx)} className="p-1 active:opacity-50">
+                  <Trash2 size={16} className="text-red-500" />
+                </button>
               </div>
-            </div>
-
-            <div className="mt-3 grid grid-cols-2 gap-2 pt-2 border-t border-gray-50">
-              <div className="flex items-center justify-between col-span-2">
-                <span className="text-[12px] text-gray-600">入库数量</span>
-                <div className="flex items-center border border-gray-200 rounded h-7">
-                  <button className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
-                    <Minus size={14} />
-                  </button>
-                  <div className="w-10 h-full flex items-center justify-center border-l border-r border-gray-200 text-[13px] font-medium">
-                    0
+              
+              <div className="flex gap-3">
+                <div className="w-16 h-16 bg-gray-50 border border-gray-100 rounded flex flex-col items-center justify-center shrink-0 text-gray-300">
+                  <ImageIcon size={20} />
+                  <span className="text-[8px] mt-1 scale-90">暂无图片</span>
+                </div>
+                <div className="flex-1 text-[11px] text-gray-500 space-y-1">
+                  <div className="flex justify-between">
+                    <span>规格: {item.spec || '无'}</span>
+                    <span>货号: {item.itemNo || '无'}</span>
                   </div>
-                  <button className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
-                    <Plus size={14} />
-                  </button>
+                  <div className="flex justify-between">
+                    <span>类目: {item.category?.split('/')[0] || '默认'}</span>
+                    <span>SKU: {item.sku || '无'}</span>
+                  </div>
                 </div>
               </div>
-              <input type="text" placeholder="损耗" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
-              <input type="text" placeholder="成本单价(元)" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
-              <input type="text" placeholder="存储位置" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
-              <input type="text" placeholder="批次号" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
-              <input type="text" placeholder="物品备注..." className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100 col-span-2" />
+
+              <div className="mt-3 grid grid-cols-2 gap-2 pt-2 border-t border-gray-50">
+                <div className="flex items-center justify-between col-span-2">
+                  <span className="text-[12px] text-gray-600">入库数量</span>
+                  <div className="flex items-center border border-gray-200 rounded h-7">
+                    <button onClick={() => handleUpdateQuantity(idx, -1)} className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
+                      <Minus size={14} />
+                    </button>
+                    <div className="w-10 h-full flex items-center justify-center border-l border-r border-gray-200 text-[13px] font-medium">
+                      {item.quantity || 0}
+                    </div>
+                    <button onClick={() => handleUpdateQuantity(idx, 1)} className="w-8 h-full flex items-center justify-center text-gray-500 active:bg-gray-100">
+                      <Plus size={14} />
+                    </button>
+                  </div>
+                </div>
+                <input type="text" placeholder="损耗" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
+                <input type="text" placeholder="成本单价(元)" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
+                <input type="text" placeholder="存储位置" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
+                <input type="text" placeholder="批次号" className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100" />
+                <input type="text" placeholder="物品备注..." className="bg-gray-50 text-[12px] px-2 py-1.5 rounded outline-none border border-gray-100 col-span-2" />
+              </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Bottom Action Bar */}
       <div className="bg-white border-t border-gray-200 flex justify-between items-center px-4 py-2 shrink-0 absolute bottom-0 w-full max-w-md pb-safe z-20 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
         <div className="text-[12px] text-gray-600 flex flex-col">
-          <span>入库总数量: <span className="text-[#ff9900] text-[15px] font-medium ml-1">0</span></span>
-          <span>总金额: <span className="text-[#ff9900] text-[15px] font-medium ml-1">0</span></span>
+          <span>入库总数量: <span className="text-[#ff9900] text-[15px] font-medium ml-1">{totalQuantity}</span></span>
+          <span>总金额: <span className="text-[#ff9900] text-[15px] font-medium ml-1">0.00</span></span>
         </div>
         <button className="bg-[#009bf5] text-white px-8 py-2 rounded-full text-[14px] font-medium active:bg-[#0085d4]">
           保存
@@ -1077,23 +1138,61 @@ const ProfileView = () => {
   );
 };
 
-const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate: (view: string) => void }) => {
+const sortItemsByMatch = (itemName: string) => {
+  return [...mockItems].sort((a, b) => {
+    // 1. Exact name match
+    if (a.name === itemName) return -1;
+    if (b.name === itemName) return 1;
+    // 2. Exact alias match
+    if (a.aliases?.includes(itemName)) return -1;
+    if (b.aliases?.includes(itemName)) return 1;
+    // 3. Partial match
+    const aPartial = a.name.includes(itemName) || a.aliases?.some(al => al.includes(itemName)) || itemName.includes(a.name);
+    const bPartial = b.name.includes(itemName) || b.aliases?.some(al => al.includes(itemName)) || itemName.includes(b.name);
+    if (aPartial && !bPartial) return -1;
+    if (!aPartial && bPartial) return 1;
+    return 0;
+  });
+};
+
+const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate: (view: string, params?: any) => void }) => {
   const [scanning, setScanning] = useState(false);
   const [hasPhoto, setHasPhoto] = useState(false);
   const [results, setResults] = useState<{name: string, quantity: number}[]>([]);
+  const [overrides, setOverrides] = useState<Record<number, string>>({});
 
   const handleTakePhoto = () => {
     setHasPhoto(true);
     setScanning(true);
+    setOverrides({});
     // Simulate AI scanning delay
     setTimeout(() => {
       setScanning(false);
       setResults([
-        { name: '一次性杯', quantity: 50 }, // matches mockItems
-        { name: '番茄', quantity: 15 },    // matches mockItems
+        { name: '纸杯', quantity: 50 }, // Synonym matching mockItems
+        { name: '西红柿', quantity: 15 },    // Synonym matching mockItems
         { name: '洁柔抽纸', quantity: 2 }    // DOES NOT match mockItems
       ]);
     }, 2000);
+  };
+
+  const getLinkedItems = (forInbound = false) => {
+    return results.map((item, idx) => {
+      const overrideId = overrides[idx];
+      let matchedItem;
+      if (overrideId === 'unlinked') {
+        matchedItem = undefined;
+      } else if (overrideId) {
+        matchedItem = mockItems.find(mi => mi.id === overrideId);
+      } else {
+        matchedItem = mockItems.find(mi => mi.name === item.name || mi.aliases?.includes(item.name));
+      }
+      
+      if (matchedItem) {
+        return { ...matchedItem, quantity: item.quantity };
+      }
+      return forInbound ? { name: item.name, quantity: item.quantity } : null;
+    }).filter(Boolean);
   };
 
   return (
@@ -1106,7 +1205,7 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
         <h1 className="text-[17px] font-medium flex-1 pr-6 text-center">拍照识别</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto flex flex-col">
+      <div className="flex-1 overflow-hidden flex flex-col">
         {!hasPhoto ? (
           // Camera Placeholder
           <div className="flex-1 flex flex-col items-center justify-center p-6 pb-20">
@@ -1141,8 +1240,8 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
           </div>
         ) : (
           // Results State
-          <div className="flex-1 flex flex-col p-4">
-            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center gap-3 mb-5">
+          <div className="flex-1 flex flex-col p-4 min-h-0">
+            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center gap-3 mb-5 shrink-0">
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                 <Scan size={24} className="text-green-600" />
               </div>
@@ -1158,7 +1257,22 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
               </div>
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
                 {results.map((item, idx) => {
-                  const matchedItem = mockItems.find(mi => mi.name === item.name);
+                  const overrideId = overrides[idx];
+                  let matchedItem;
+                  let isAliasMatch = false;
+                  let isManualOverride = false;
+
+                  if (overrideId === 'unlinked') {
+                    matchedItem = undefined;
+                  } else if (overrideId) {
+                    matchedItem = mockItems.find(mi => mi.id === overrideId);
+                    isAliasMatch = true; 
+                    isManualOverride = true;
+                  } else {
+                    matchedItem = mockItems.find(mi => mi.name === item.name || mi.aliases?.includes(item.name));
+                    isAliasMatch = !!matchedItem && matchedItem.name !== item.name;
+                  }
+
                   const isMatched = !!matchedItem;
                   return (
                     <div key={idx} className={`p-4 flex flex-col gap-3 ${!isMatched ? 'bg-orange-50/50' : ''}`}>
@@ -1168,12 +1282,15 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
                             {isMatched ? <Package size={22} /> : <AlertCircle size={22} />}
                           </div>
                           <div>
-                            <div className="font-medium text-gray-800 text-[15px] flex items-center gap-1.5">
-                              {item.name}
+                            <div className="font-medium text-gray-800 text-[15px] flex items-center gap-1.5 flex-wrap">
+                              <span>{isAliasMatch ? matchedItem.name : item.name}</span>
+                              {isAliasMatch && <span className="text-gray-400 text-[13px] font-normal tracking-wide"> (识别为: {item.name})</span>}
                               {!isMatched && <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 text-[10px] rounded border border-orange-200">未入库</span>}
                             </div>
                             <div className="text-[12px] mt-1 text-gray-400">
-                              {isMatched ? `编号: #${matchedItem.id} | ${matchedItem.category}` : '未在物品库中找到该物品'}
+                              {isMatched ? 
+                                <span>编号: #{matchedItem.id} | {isManualOverride ? <span className="text-purple-500 font-medium">已手动修正</span> : isAliasMatch ? <span className="text-[#009bf5] font-medium">已自动关联</span> : matchedItem.category}</span> 
+                                : '未在物品库中找到该物品'}
                             </div>
                           </div>
                         </div>
@@ -1181,11 +1298,47 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
                           <div className="font-semibold text-gray-800 text-[16px]">x{item.quantity}</div>
                         </div>
                       </div>
-                      {!isMatched && (
-                        <div className="flex justify-start pl-[56px] pt-1 mt-1">
-                           <button onClick={() => onNavigate('add-item')} className="text-[13px] text-[#2b85e4] flex items-center gap-1 active:opacity-70 bg-blue-50 px-3 py-1.5 rounded-lg font-medium border border-blue-100">
-                             <Plus size={14} /> 需要创建此物品吗？
-                           </button>
+                      {!isMatched ? (
+                         <div className="pt-1 mt-1">
+                           <div className="text-[11px] text-gray-400 mb-2">选择关联物品或按新物品入库 (右滑查看大单):</div>
+                           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                             <button
+                               onClick={() => setOverrides({...overrides, [idx]: 'unlinked'})}
+                               className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${overrideId === 'unlinked' || (!overrideId && !matchedItem && !isAliasMatch) ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}
+                             >
+                               按新物品入库
+                             </button>
+                             {sortItemsByMatch(item.name).map(mi => (
+                               <button
+                                 key={mi.id}
+                                 onClick={() => setOverrides({...overrides, [idx]: mi.id})}
+                                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${matchedItem?.id === mi.id ? 'bg-[#e6f4fe] text-[#009bf5] border-[#b3dfff]' : 'bg-white text-gray-600 border-gray-200'}`}
+                               >
+                                 {mi.name}
+                               </button>
+                             ))}
+                           </div>
+                        </div>
+                      ) : (
+                        <div className="pt-1 mt-1 border-t border-gray-100 pt-2">
+                           <div className="text-[11px] text-gray-400 mb-2">手动匹配 (右滑查看大单):</div>
+                           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                             <button
+                               onClick={() => setOverrides({...overrides, [idx]: 'unlinked'})}
+                               className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${overrideId === 'unlinked' || (!overrideId && !matchedItem && !isAliasMatch) ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-white text-gray-500 border-gray-200'}`}
+                             >
+                               取消匹配 (加入新物品)
+                             </button>
+                             {sortItemsByMatch(item.name).map(mi => (
+                               <button
+                                 key={mi.id}
+                                 onClick={() => setOverrides({...overrides, [idx]: mi.id})}
+                                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${matchedItem?.id === mi.id ? 'bg-[#e6f4fe] text-[#009bf5] border-[#b3dfff]' : 'bg-white text-gray-600 border-gray-200'}`}
+                               >
+                                 {mi.name}
+                               </button>
+                             ))}
+                           </div>
                         </div>
                       )}
                     </div>
@@ -1195,15 +1348,15 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
             </div>
 
             {/* Bottom Actions */}
-            <div className="flex gap-3 pb-safe pt-2">
+            <div className="flex gap-3 pb-safe pt-2 shrink-0">
               <button
-                onClick={() => onNavigate('add-inbound')}
+                onClick={() => onNavigate('add-inbound', getLinkedItems(true))}
                 className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#19be6b] to-[#15a35c] text-white font-medium shadow-md shadow-green-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
               >
                 <Plus size={18} /> 去入库
               </button>
               <button
-                onClick={() => onNavigate('add-outbound')}
+                onClick={() => onNavigate('add-outbound', getLinkedItems(false))}
                 className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#2b85e4] to-[#2573c7] text-white font-medium shadow-md shadow-blue-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
               >
                 <Minus size={18} /> 去出库
@@ -1216,7 +1369,9 @@ const PhotoRecognitionView = ({ onBack, onNavigate }: { onBack: () => void, onNa
   );
 };
 
-const AddItemView = ({ onBack }: { onBack: () => void }) => {
+const AddItemView = ({ onBack, initialItemName = '' }: { onBack: () => void, initialItemName?: string }) => {
+  const [itemName, setItemName] = useState(initialItemName);
+
   return (
     <div className="flex flex-col h-full w-full bg-[#f5f5f5]">
       {/* Header */}
@@ -1232,7 +1387,13 @@ const AddItemView = ({ onBack }: { onBack: () => void }) => {
         <div className="bg-white px-4 py-1 mt-2">
           <div className="flex items-center justify-between py-3 border-b border-gray-100">
             <div className="text-[14px] text-gray-700 w-20"><span className="text-red-500 mr-1">*</span>物品名称</div>
-            <input type="text" placeholder="请输入名称" className="flex-1 text-right text-[14px] outline-none text-gray-800" />
+            <input 
+              type="text" 
+              placeholder="请输入名称" 
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              className="flex-1 text-right text-[14px] outline-none text-gray-800" 
+            />
           </div>
           <div className="flex items-center justify-between py-3 border-b border-gray-100 active:bg-gray-50">
             <div className="text-[14px] text-gray-700 w-20"><span className="text-red-500 mr-1">*</span>分类</div>
@@ -1340,33 +1501,54 @@ const AddItemView = ({ onBack }: { onBack: () => void }) => {
       {/* Bottom Actions */}
       <div className="bg-white px-4 py-2.5 flex gap-3 border-t border-gray-200 absolute bottom-0 w-full max-w-md pb-safe">
         <button onClick={onBack} className="flex-1 py-3 rounded-xl bg-gray-100 text-gray-700 font-medium active:bg-gray-200 text-[15px]">取消</button>
-        <button className="flex-[2] py-3 rounded-xl bg-[#2b85e4] text-white font-medium active:bg-[#2374c7] shadow-md shadow-blue-500/20 text-[15px]">保存物品</button>
+        <button onClick={() => { alert(`保存物品: ${itemName} 成功!`); onBack(); }} className="flex-[2] py-3 rounded-xl bg-[#2b85e4] text-white font-medium active:bg-[#2374c7] shadow-md shadow-blue-500/20 text-[15px]">保存物品</button>
       </div>
     </div>
   );
 };
 
-const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate: (view: string) => void }) => {
+const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate: (view: string, params?: any) => void }) => {
   const [status, setStatus] = useState<'idle' | 'recording' | 'processing' | 'results'>('idle');
   const [results, setResults] = useState<{name: string, quantity: number}[]>([]);
   const [transcript, setTranscript] = useState("");
+  const [overrides, setOverrides] = useState<Record<number, string>>({});
 
   const handleStartRecording = () => {
     setStatus('recording');
+    setOverrides({});
     // Simulate recording time
     setTimeout(() => {
       setStatus('processing');
-      setTranscript("帮我出库15个番茄，50个一次性杯，还有2包不存在的纸巾。");
+      setTranscript("帮我出库15个西红柿，50个纸杯，还有2包不存在的纸巾。");
       // Simulate AI processing delay
       setTimeout(() => {
         setStatus('results');
         setResults([
-          { name: '一次性杯', quantity: 50 }, // matches mockItems
-          { name: '番茄', quantity: 15 },    // matches mockItems
+          { name: '纸杯', quantity: 50 }, // Synonym matching mockItems
+          { name: '西红柿', quantity: 15 },    // Synonym matching mockItems
           { name: '不存在的纸巾', quantity: 2 }    // DOES NOT match mockItems
         ]);
       }, 1500);
     }, 3000);
+  };
+
+  const getLinkedItems = (forInbound = false) => {
+    return results.map((item, idx) => {
+      const overrideId = overrides[idx];
+      let matchedItem;
+      if (overrideId === 'unlinked') {
+        matchedItem = undefined;
+      } else if (overrideId) {
+        matchedItem = mockItems.find(mi => mi.id === overrideId);
+      } else {
+        matchedItem = mockItems.find(mi => mi.name === item.name || mi.aliases?.includes(item.name));
+      }
+      
+      if (matchedItem) {
+        return { ...matchedItem, quantity: item.quantity };
+      }
+      return forInbound ? { name: item.name, quantity: item.quantity } : null;
+    }).filter(Boolean);
   };
 
   return (
@@ -1379,7 +1561,7 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
         <h1 className="text-[17px] font-medium flex-1 pr-6 text-center">语音录入</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto flex flex-col">
+      <div className="flex-1 overflow-hidden flex flex-col">
         {status === 'idle' || status === 'recording' || status === 'processing' ? (
           <div className="flex-1 flex flex-col items-center justify-between p-6 pb-20 mt-10">
             <div className="flex flex-col items-center min-h-[120px]">
@@ -1427,13 +1609,13 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
           </div>
         ) : (
           // Results State
-          <div className="flex-1 flex flex-col p-4">
-            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mb-5">
+          <div className="flex-1 flex flex-col p-4 min-h-0">
+            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4 mb-5 shrink-0">
               <h3 className="font-semibold text-indigo-800 text-[14px] mb-1">您刚才说：</h3>
               <p className="text-[14px] text-indigo-600 leading-relaxed font-medium">"{transcript}"</p>
             </div>
             
-            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center gap-3 mb-5">
+            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center gap-3 mb-5 shrink-0">
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                 <Scan size={24} className="text-green-600" />
               </div>
@@ -1449,7 +1631,22 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
               </div>
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
                 {results.map((item, idx) => {
-                  const matchedItem = mockItems.find(mi => mi.name === item.name);
+                  const overrideId = overrides[idx];
+                  let matchedItem;
+                  let isAliasMatch = false;
+                  let isManualOverride = false;
+
+                  if (overrideId === 'unlinked') {
+                    matchedItem = undefined;
+                  } else if (overrideId) {
+                    matchedItem = mockItems.find(mi => mi.id === overrideId);
+                    isAliasMatch = true; 
+                    isManualOverride = true;
+                  } else {
+                    matchedItem = mockItems.find(mi => mi.name === item.name || mi.aliases?.includes(item.name));
+                    isAliasMatch = !!matchedItem && matchedItem.name !== item.name;
+                  }
+
                   const isMatched = !!matchedItem;
                   return (
                     <div key={idx} className={`p-4 flex flex-col gap-3 ${!isMatched ? 'bg-orange-50/50' : ''}`}>
@@ -1459,12 +1656,15 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
                             {isMatched ? <Package size={22} /> : <AlertCircle size={22} />}
                           </div>
                           <div>
-                            <div className="font-medium text-gray-800 text-[15px] flex items-center gap-1.5">
-                              {item.name}
+                            <div className="font-medium text-gray-800 text-[15px] flex items-center gap-1.5 flex-wrap">
+                              <span>{isAliasMatch ? matchedItem.name : item.name}</span>
+                              {isAliasMatch && <span className="text-gray-400 text-[13px] font-normal tracking-wide"> (识别为: {item.name})</span>}
                               {!isMatched && <span className="px-1.5 py-0.5 bg-orange-100 text-orange-600 text-[10px] rounded border border-orange-200">未入库</span>}
                             </div>
                             <div className="text-[12px] mt-1 text-gray-400">
-                              {isMatched ? `编号: #${matchedItem.id} | ${matchedItem.category}` : '未在物品库中找到该物品'}
+                              {isMatched ? 
+                                <span>编号: #{matchedItem.id} | {isManualOverride ? <span className="text-purple-500 font-medium">已手动修正</span> : isAliasMatch ? <span className="text-[#009bf5] font-medium">已自动关联</span> : matchedItem.category}</span> 
+                                : '未在物品库中找到该物品'}
                             </div>
                           </div>
                         </div>
@@ -1472,11 +1672,47 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
                           <div className="font-semibold text-gray-800 text-[16px]">x{item.quantity}</div>
                         </div>
                       </div>
-                      {!isMatched && (
-                        <div className="flex justify-start pl-[56px] pt-1 mt-1">
-                           <button onClick={() => onNavigate('add-item')} className="text-[13px] text-[#2b85e4] flex items-center gap-1 active:opacity-70 bg-blue-50 px-3 py-1.5 rounded-lg font-medium border border-blue-100">
-                             <Plus size={14} /> 需要创建此物品吗？
-                           </button>
+                      {!isMatched ? (
+                         <div className="pt-1 mt-1">
+                           <div className="text-[11px] text-gray-400 mb-2">选择关联物品或按新物品入库 (右滑查看大单):</div>
+                           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                             <button
+                               onClick={() => setOverrides({...overrides, [idx]: 'unlinked'})}
+                               className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${overrideId === 'unlinked' || (!overrideId && !matchedItem && !isAliasMatch) ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-gray-50 text-gray-500 border-gray-200'}`}
+                             >
+                               按新物品入库
+                             </button>
+                             {sortItemsByMatch(item.name).map(mi => (
+                               <button
+                                 key={mi.id}
+                                 onClick={() => setOverrides({...overrides, [idx]: mi.id})}
+                                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${matchedItem?.id === mi.id ? 'bg-[#e6f4fe] text-[#009bf5] border-[#b3dfff]' : 'bg-white text-gray-600 border-gray-200'}`}
+                               >
+                                 {mi.name}
+                               </button>
+                             ))}
+                           </div>
+                        </div>
+                      ) : (
+                        <div className="pt-1 mt-1 border-t border-gray-100 pt-2">
+                           <div className="text-[11px] text-gray-400 mb-2">手动匹配 (右滑查看大单):</div>
+                           <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                             <button
+                               onClick={() => setOverrides({...overrides, [idx]: 'unlinked'})}
+                               className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${overrideId === 'unlinked' || (!overrideId && !matchedItem && !isAliasMatch) ? 'bg-orange-50 text-orange-600 border-orange-200' : 'bg-white text-gray-500 border-gray-200'}`}
+                             >
+                               取消匹配 (加入新物品)
+                             </button>
+                             {sortItemsByMatch(item.name).map(mi => (
+                               <button
+                                 key={mi.id}
+                                 onClick={() => setOverrides({...overrides, [idx]: mi.id})}
+                                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] border ${matchedItem?.id === mi.id ? 'bg-[#e6f4fe] text-[#009bf5] border-[#b3dfff]' : 'bg-white text-gray-600 border-gray-200'}`}
+                               >
+                                 {mi.name}
+                               </button>
+                             ))}
+                           </div>
                         </div>
                       )}
                     </div>
@@ -1488,13 +1724,13 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
             {/* Bottom Actions */}
             <div className="flex gap-3 pb-safe pt-2">
               <button
-                onClick={() => onNavigate('add-inbound')}
+                onClick={() => onNavigate('add-inbound', getLinkedItems(true))}
                 className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#19be6b] to-[#15a35c] text-white font-medium shadow-md shadow-green-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
               >
                 <Plus size={18} /> 去入库
               </button>
               <button
-                onClick={() => onNavigate('add-outbound')}
+                onClick={() => onNavigate('add-outbound', getLinkedItems(false))}
                 className="flex-1 py-3.5 rounded-xl bg-gradient-to-br from-[#2b85e4] to-[#2573c7] text-white font-medium shadow-md shadow-blue-500/20 active:opacity-90 flex items-center justify-center gap-1.5 transition-opacity"
               >
                 <Minus size={18} /> 去出库
@@ -1509,38 +1745,44 @@ const VoiceInputView = ({ onBack, onNavigate }: { onBack: () => void, onNavigate
 
 export default function App() {
   const [currentView, setCurrentView] = useState('home');
+  const [viewParams, setViewParams] = useState<any>(null);
+
+  const handleNavigate = (view: string, params?: any) => {
+    setViewParams(params || null);
+    setCurrentView(view);
+  };
 
   return (
     <div className="flex flex-col h-[100dvh] bg-[#f5f5f5] font-sans max-w-md mx-auto relative overflow-hidden">
-      {currentView === 'home' && <HomeView onNavigate={setCurrentView} />}
-      {currentView === 'items' && <ItemsView onNavigate={setCurrentView} />}
+      {currentView === 'home' && <HomeView onNavigate={handleNavigate} />}
+      {currentView === 'items' && <ItemsView onNavigate={handleNavigate} />}
       {currentView === 'stats' && <StatsView />}
       {currentView === 'profile' && <ProfileView />}
-      {currentView === 'add-outbound' && <AddOutboundView onBack={() => setCurrentView('home')} />}
-      {currentView === 'outbound-list' && <OutboundListView onBack={() => setCurrentView('home')} onNavigate={setCurrentView} />}
-      {currentView === 'add-inbound' && <AddInboundView onBack={() => setCurrentView('home')} />}
-      {currentView === 'inbound-list' && <InboundListView onBack={() => setCurrentView('home')} />}
-      {currentView === 'purchase-list' && <PurchaseListView onBack={() => setCurrentView('home')} />}
-      {currentView === 'photo-recognition' && <PhotoRecognitionView onBack={() => setCurrentView('home')} onNavigate={setCurrentView} />}
-      {currentView === 'voice-input' && <VoiceInputView onBack={() => setCurrentView('home')} onNavigate={setCurrentView} />}
-      {currentView === 'add-item' && <AddItemView onBack={() => setCurrentView('items')} />}
+      {currentView === 'add-outbound' && <AddOutboundView onBack={() => handleNavigate('home')} initialItems={viewParams} />}
+      {currentView === 'outbound-list' && <OutboundListView onBack={() => handleNavigate('home')} onNavigate={handleNavigate} />}
+      {currentView === 'add-inbound' && <AddInboundView onBack={() => handleNavigate('home')} initialItems={viewParams} />}
+      {currentView === 'inbound-list' && <InboundListView onBack={() => handleNavigate('home')} />}
+      {currentView === 'purchase-list' && <PurchaseListView onBack={() => handleNavigate('home')} />}
+      {currentView === 'photo-recognition' && <PhotoRecognitionView onBack={() => handleNavigate('home')} onNavigate={handleNavigate} />}
+      {currentView === 'voice-input' && <VoiceInputView onBack={() => handleNavigate('home')} onNavigate={handleNavigate} />}
+      {currentView === 'add-item' && <AddItemView onBack={() => handleNavigate(viewParams?.returnTo || 'items')} initialItemName={viewParams?.name} />}
 
       {/* Bottom Navigation (Only show on main tabs) */}
       {(currentView === 'home' || currentView === 'items' || currentView === 'stats' || currentView === 'profile') && (
         <div className="bg-[#fafafa] border-t border-gray-200 flex justify-around items-center py-1.5 shrink-0 absolute bottom-0 w-full max-w-md pb-safe z-10">
-          <button onClick={() => setCurrentView('home')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'home' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
+          <button onClick={() => handleNavigate('home')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'home' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
             <Home size={22} strokeWidth={2} />
             <span className="text-[10px]">首页</span>
           </button>
-          <button onClick={() => setCurrentView('items')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'items' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
+          <button onClick={() => handleNavigate('items')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'items' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
             <ShoppingBag size={22} strokeWidth={2} />
             <span className="text-[10px]">物品</span>
           </button>
-          <button onClick={() => setCurrentView('stats')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'stats' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
+          <button onClick={() => handleNavigate('stats')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'stats' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
             <PieChart size={22} strokeWidth={2} />
             <span className="text-[10px]">统计</span>
           </button>
-          <button onClick={() => setCurrentView('profile')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'profile' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
+          <button onClick={() => handleNavigate('profile')} className={`flex flex-col items-center gap-0.5 w-1/4 py-1 ${currentView === 'profile' ? 'text-[#009bf5]' : 'text-[#999999] active:opacity-70'}`}>
             <User size={22} strokeWidth={2} />
             <span className="text-[10px]">我的</span>
           </button>
